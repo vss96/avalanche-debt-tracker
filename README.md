@@ -1,63 +1,170 @@
-# Next.js Framework Starter
+# 💳 Avalanche Debt Tracker
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/cloudflare/templates/tree/main/next-starter-template)
+A smart debt management app that helps you optimize your debt payoff strategy using the **avalanche method** - prioritizing high-interest debts to save you the most money.
 
-<!-- dash-content-start -->
+## ✨ Features
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app). It's deployed on Cloudflare Workers as a [static website](https://developers.cloudflare.com/workers/static-assets/).
+### 🎯 **Smart Debt Management**
+- Add, edit, and delete debt entries
+- Automatic 10% minimum payment calculation (or set your own)
+- Real-time avalanche strategy recommendations
+- Monthly payment breakdown with interactive timeline
 
-This template uses [OpenNext](https://opennext.js.org/) via the [OpenNext Cloudflare adapter](https://opennext.js.org/cloudflare), which works by taking the Next.js build output and transforming it, so that it can run in Cloudflare Workers.
+### 🌍 **Multi-Currency Support**
+- Auto-detects currency from browser locale
+- Supports USD, EUR, GBP, CAD, AUD, JPY
+- Proper currency formatting for your region
 
-<!-- dash-content-end -->
+### 📊 **Avalanche Strategy**
+- Prioritizes highest interest rate debts first
+- Shows exactly how much to pay on each debt
+- Calculates interest savings vs minimum payments
+- Interactive 1-12 month payment preview
 
-Outside of this repo, you can start a new project with this template using [C3](https://developers.cloudflare.com/pages/get-started/c3/) (the `create-cloudflare` CLI):
+### 💾 **Data Persistence**
+- All data stored locally in your browser
+- Survives browser restarts and computer reboots
+- Your financial data never leaves your device
+- Export/import functionality for backups
 
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 18+
+- npm, yarn, or pnpm
+
+### Installation
+
+1. **Clone and install dependencies:**
 ```bash
-npm create cloudflare@latest -- --template=cloudflare/templates/next-starter-template
-```
-
-A live public deployment of this template is available at [https://next-starter-template.templates.workers.dev](https://next-starter-template.templates.workers.dev)
-
-## Getting Started
-
-First, run:
-
-```bash
+git clone <your-repo-url>
+cd avalanche-debt-tracker
 npm install
-# or
-yarn install
-# or
-pnpm install
-# or
-bun install
 ```
 
-Then run the development server (using the package manager of your choice):
-
+2. **Start the development server:**
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. **Open your browser:**
+Navigate to [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+4. **Try it out:**
+- Click "Load Sample Data" to see the app in action
+- Or start adding your own debts and available funds
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## 📖 How to Use
 
-## Deploying To Production
+### 1. **Set Your Available Funds**
+- Enter your monthly income after rent, bills, and essentials
+- Choose your currency (auto-detected from your location)
+- This determines how much you can allocate to debt payments
 
-| Command                           | Action                                       |
-| :-------------------------------- | :------------------------------------------- |
-| `npm run build`                   | Build your production site                   |
-| `npm run preview`                 | Preview your build locally, before deploying |
-| `npm run build && npm run deploy` | Deploy your production site to Cloudflare    |
-| `npm wrangler tail`               | View real-time logs for all Workers          |
+### 2. **Add Your Debts**
+- Enter creditor name, balance, and interest rate (APR)
+- Minimum payment is optional - defaults to 10% of balance
+- Add all your debts for the most accurate strategy
 
-## Learn More
+### 3. **Follow the Avalanche Strategy**
+- App automatically sorts debts by interest rate (highest first)
+- Pay minimums on all debts
+- Put ALL extra money toward the highest interest debt
+- Move to next highest when first debt is paid off
 
-To learn more about Next.js, take a look at the following resources:
+### 4. **Track Your Progress**
+- Use the interactive timeline slider (1-12 months)
+- See month-by-month breakdown of payments
+- Track how much goes to interest vs principal
+- Monitor your progress toward debt freedom
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🧮 The Avalanche Method
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+The **debt avalanche** method saves you the most money by:
+
+1. **Paying minimums** on all debts
+2. **Targeting highest interest** debt with extra payments
+3. **Cascading payments** as debts are eliminated
+4. **Minimizing total interest** paid over time
+
+**Example:** If you have a 24% credit card and 6% student loan, pay minimums on the student loan and attack the credit card first - even if the student loan balance is higher.
+
+## 💰 Currency Support
+
+**Supported Currencies:**
+- 🇺🇸 USD (US Dollar)
+- 🇪🇺 EUR (Euro)
+- 🇬🇧 GBP (British Pound)
+- 🇨🇦 CAD (Canadian Dollar)
+- 🇦🇺 AUD (Australian Dollar)
+- 🇯🇵 JPY (Japanese Yen)
+
+**Auto-Detection Examples:**
+- Browser set to `en-US` → USD
+- Browser set to `en-GB` → GBP
+- Browser set to `fr-FR` → EUR
+- Browser set to `de-DE` → EUR
+
+## 🏗️ Technical Details
+
+### **Built With:**
+- **Next.js 15** - React framework with App Router
+- **TypeScript** - Type-safe development
+- **Tailwind CSS** - Utility-first styling
+- **React Hooks** - Modern state management
+- **localStorage** - Client-side data persistence
+
+### **Key Components:**
+- `DebtForm` - Add/edit debt entries
+- `DebtList` - Display and manage debts
+- `AvalancheDisplay` - Strategy recommendations
+- `MonthlyBreakdown` - Interactive payment timeline
+- `CurrencyContext` - Global currency management
+
+### **Calculations:**
+- Proper compound interest formulas
+- APR to monthly rate conversion
+- Loan payoff time calculations
+- Interest savings projections
+
+## 🔧 Development Commands
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint |
+| `npm run check` | Type check with TypeScript |
+
+## 📱 Data Storage
+
+- **Local Storage**: All data stored in browser localStorage
+- **Privacy**: Your financial data never leaves your device
+- **Persistence**: Data survives browser restarts
+- **Backup**: Export/import functionality available
+
+## 🎨 Customization
+
+The app uses Tailwind CSS for styling. Key customization points:
+
+- **Colors**: Update color schemes in component files
+- **Currency**: Add new currencies in `src/types/debt.ts`
+- **Calculations**: Modify algorithms in `src/utils/debtCalculations.ts`
+- **Storage**: Extend localStorage utilities in `src/utils/localStorage.ts`
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+---
+
+**💡 Pro Tip:** The avalanche method typically saves more money than the snowball method (paying smallest balances first), especially with high-interest debt like credit cards!
