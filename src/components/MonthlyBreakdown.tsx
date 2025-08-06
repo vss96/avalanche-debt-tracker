@@ -7,11 +7,11 @@ import { calculateMonthlyBreakdown } from '@/utils/debtCalculations';
 
 interface MonthlyBreakdownProps {
   recommendation: AvalancheRecommendation;
+  monthsToShow: number;
 }
 
-export default function MonthlyBreakdown({ recommendation }: MonthlyBreakdownProps) {
+export default function MonthlyBreakdown({ recommendation, monthsToShow }: MonthlyBreakdownProps) {
   const { formatCurrency } = useCurrency();
-  const [monthsToShow, setMonthsToShow] = useState(6);
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Recalculate breakdown when months to show changes
@@ -43,34 +43,6 @@ export default function MonthlyBreakdown({ recommendation }: MonthlyBreakdownPro
 
       {isExpanded && (
         <div className="space-y-4">
-          {/* Months Slider */}
-          <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-            <div className="flex justify-between items-center mb-2">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Months to Preview: {monthsToShow}
-              </label>
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                1-12 months
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="12"
-              value={monthsToShow}
-              onChange={(e) => setMonthsToShow(parseInt(e.target.value))}
-              className="w-full h-2 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
-              style={{
-                background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((monthsToShow - 1) / 11) * 100}%, #e5e7eb ${((monthsToShow - 1) / 11) * 100}%, #e5e7eb 100%)`
-              }}
-            />
-            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
-              <span>1</span>
-              <span>6</span>
-              <span>12</span>
-            </div>
-          </div>
-
           {/* Summary for the period */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
             <div className="bg-blue-50 dark:bg-blue-900/20 rounded p-3">

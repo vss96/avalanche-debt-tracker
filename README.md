@@ -141,11 +141,11 @@ The **debt avalanche** method saves you the most money by:
 
 ### **Cloudflare Workers (Current Setup)**
 
-This app is configured to deploy to Cloudflare Workers using OpenNext:
+This app is configured to deploy to Cloudflare Workers using OpenNext with Bun:
 
 ```bash
 # Deploy to Cloudflare Workers
-npm run deploy
+bun run deploy
 ```
 
 **Live Demo:** https://avalanche-debt-tracker.shettyvikas209.workers.dev
@@ -154,9 +154,15 @@ npm run deploy
 
 | Command | Description |
 |---------|-------------|
-| `npm run deploy` | Build and deploy to Cloudflare Workers |
-| `npm run preview` | Build and preview locally before deploying |
-| `npm run build` | Build the Next.js app |
+| `bun run deploy` | Build and deploy to Cloudflare Workers |
+| `bun run preview` | Build and preview locally before deploying |
+| `bun run build` | Build the Next.js app |
+
+### **Bun Configuration**
+- Uses Cloudflare Pages v2 build system
+- Node.js 20 specified in `.nvmrc`
+- Bun 1.1.0 specified in `package.json`
+- `bun.lockb` file for dependency locking
 
 ### **Configuration Files**
 - `wrangler.jsonc` - Cloudflare Workers configuration

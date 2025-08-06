@@ -193,7 +193,7 @@ export default function AvalancheDisplay({ strategy, debts, availableFunds, user
               )}
 
               {/* Monthly Breakdown */}
-              <MonthlyBreakdown recommendation={rec} />
+              <MonthlyBreakdown recommendation={rec} monthsToShow={monthsToShow} />
             </div>
           ))}
         </div>
