@@ -34,9 +34,10 @@ function saveToStorage<T>(key: string, value: T): void {
 export function loadDebts(): DebtEntry[] {
   const debts = getFromStorage<DebtEntry[]>(STORAGE_KEYS.DEBTS, []);
   
-  // Convert date strings back to Date objects
+  // Convert date strings back to Date objects and ensure debtType exists
   return debts.map(debt => ({
     ...debt,
+    debtType: debt.debtType || 'credit_card', // Default to credit card if not set
     createdAt: new Date(debt.createdAt),
     updatedAt: new Date(debt.updatedAt)
   }));

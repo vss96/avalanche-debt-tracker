@@ -29,6 +29,8 @@ export default function DebtList({ debts, onDebtsUpdate }: DebtListProps) {
   };
 
   const handleEditSubmit = () => {
+    // The DebtForm already saved the debt to localStorage via updateDebt()
+    // We just need to refresh the list and close the form
     const updatedDebts = loadDebts();
     onDebtsUpdate(updatedDebts);
     setEditingDebtId(null);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DebtEntry, DebtFormData, DebtFormErrors, DEBT_TYPES } from '@/types/debt';
 import { validateDebtEntry, generateDebtId } from '@/utils/debtCalculations';
 import { addDebt, updateDebt, loadUserFinances } from '@/utils/localStorage';
@@ -32,6 +32,18 @@ export default function DebtForm({ debt, onSubmit, onCancel }: DebtFormProps) {
   });
   
   const [errors, setErrors] = useState<DebtFormErrors>({});
+
+  // Clear loan-specific fields when switching from loan to credit card
+  useEffect(() => {
+    if (formData.debtType === 'credit_card') {
+      setFormData(prev => ({
+        ...prev,
+        loanDurationMonths: '',
+        loanFee: '',
+        loanFeeType: 'monthly'
+      }));
+    }
+  }, [formData.debtType]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (field: keyof DebtFormData, value: string) => {
@@ -46,9 +58,13 @@ export default function DebtForm({ debt, onSubmit, onCancel }: DebtFormProps) {
   const validateForm = (): boolean => {
     const debtData: Partial<DebtEntry> = {
       creditorName: formData.creditorName.trim(),
+      debtType: formData.debtType,
       balance: parseFloat(formData.balance),
-      minimumPayment: parseFloat(formData.minimumPayment),
-      interestRate: parseFloat(formData.interestRate)
+      minimumPayment: formData.minimumPayment ? parseFloat(formData.minimumPayment) : undefined,
+      interestRate: parseFloat(formData.interestRate),
+      loanDurationMonths: formData.debtType === 'loan' && formData.loanDurationMonths ? parseInt(formData.loanDurationMonths) : undefined,
+      loanFee: formData.debtType === 'loan' && formData.loanFee ? parseFloat(formData.loanFee) : undefined,
+      loanFeeType: formData.debtType === 'loan' && formData.loanFee ? formData.loanFeeType : undefined
     };
 
     const validationErrors = validateDebtEntry(debtData);
@@ -60,6 +76,9 @@ export default function DebtForm({ debt, onSubmit, onCancel }: DebtFormProps) {
         if (error.includes('Balance')) errorMap.balance = error;
         if (error.includes('Minimum payment')) errorMap.minimumPayment = error;
         if (error.includes('Interest rate')) errorMap.interestRate = error;
+        if (error.includes('Debt type')) errorMap.debtType = error;
+        if (error.includes('Loan duration')) errorMap.loanDurationMonths = error;
+        if (error.includes('Loan fee')) errorMap.loanFee = error;
       });
       setErrors(errorMap);
       return false;
@@ -70,11 +89,11 @@ export default function DebtForm({ debt, onSubmit, onCancel }: DebtFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     setIsSubmitting(true);
-    
+
     try {
       const now = new Date();
       const balance = parseFloat(formData.balance);
@@ -94,19 +113,32 @@ export default function DebtForm({ debt, onSubmit, onCancel }: DebtFormProps) {
         balance,
         minimumPayment,
         interestRate: parseFloat(formData.interestRate),
-        loanDurationMonths: formData.loanDurationMonths ? parseInt(formData.loanDurationMonths) : undefined,
-        loanFee: formData.loanFee ? parseFloat(formData.loanFee) : undefined,
-        loanFeeType: formData.loanFee ? formData.loanFeeType : undefined,
+        // Only include loan fields if it's actually a loan
+        loanDurationMonths: formData.debtType === 'loan' && formData.loanDurationMonths ? parseInt(formData.loanDurationMonths) : undefined,
+        loanFee: formData.debtType === 'loan' && formData.loanFee ? parseFloat(formData.loanFee) : undefined,
+        loanFeeType: formData.debtType === 'loan' && formData.loanFee ? formData.loanFeeType : undefined,
         createdAt: debt?.createdAt || now,
         updatedAt: now
       };
 
       if (isEditMode) {
-        updateDebt(debtEntry.id, debtEntry);
+        // For updates, only pass the fields that can change (exclude id, createdAt)
+        const updates = {
+          creditorName: debtEntry.creditorName,
+          debtType: debtEntry.debtType,
+          balance: debtEntry.balance,
+          minimumPayment: debtEntry.minimumPayment,
+          interestRate: debtEntry.interestRate,
+          loanDurationMonths: debtEntry.loanDurationMonths,
+          loanFee: debtEntry.loanFee,
+          loanFeeType: debtEntry.loanFeeType,
+          updatedAt: debtEntry.updatedAt
+        };
+        updateDebt(debtEntry.id, updates);
       } else {
         addDebt(debtEntry);
       }
-      
+
       onSubmit(debtEntry);
     } catch (error) {
       console.error('Error saving debt:', error);
