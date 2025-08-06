@@ -1,16 +1,28 @@
+export type DebtType = 'credit_card' | 'loan';
+
 export interface DebtEntry {
   id: string;
   creditorName: string;
+  debtType: DebtType;
   balance: number;
   minimumPayment: number;
   interestRate: number; // Annual percentage rate
+  loanDurationMonths?: number; // For loans - original loan term
+  loanFee?: number; // For loans - upfront or monthly fees
+  loanFeeType?: 'upfront' | 'monthly'; // How the fee is applied
   createdAt: Date;
   updatedAt: Date;
 }
 
+export const DEBT_TYPES = [
+  { value: 'credit_card', label: 'Credit Card', icon: '💳' },
+  { value: 'loan', label: 'Loan', icon: '🏦' }
+] as const;
+
 export interface UserFinances {
   monthlyIncomeAfterExpenses: number;
   currency: string; // ISO currency code (USD, EUR, GBP, etc.)
+  defaultMinimumPaymentPercentage: number; // 1-10% for calculating minimum payments
   lastUpdated: Date;
 }
 
@@ -56,16 +68,24 @@ export interface DebtSummary {
 // Form validation types
 export interface DebtFormData {
   creditorName: string;
+  debtType: DebtType;
   balance: string;
   minimumPayment: string;
   interestRate: string;
+  loanDurationMonths: string;
+  loanFee: string;
+  loanFeeType: 'upfront' | 'monthly';
 }
 
 export interface DebtFormErrors {
   creditorName?: string;
+  debtType?: string;
   balance?: string;
   minimumPayment?: string;
   interestRate?: string;
+  loanDurationMonths?: string;
+  loanFee?: string;
+  loanFeeType?: string;
 }
 
 // Supported currencies

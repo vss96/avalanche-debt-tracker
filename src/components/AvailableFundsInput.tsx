@@ -13,12 +13,14 @@ interface AvailableFundsInputProps {
 export default function AvailableFundsInput({ userFinances, onFinancesUpdate }: AvailableFundsInputProps) {
   const { currency, setCurrency, formatCurrency, getCurrencySymbol } = useCurrency();
   const [amount, setAmount] = useState('');
+  const [minPaymentPercentage, setMinPaymentPercentage] = useState(2);
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
     if (userFinances) {
       setAmount(userFinances.monthlyIncomeAfterExpenses.toString());
+      setMinPaymentPercentage(userFinances.defaultMinimumPaymentPercentage || 2);
     }
   }, [userFinances]);
 
@@ -35,10 +37,11 @@ export default function AvailableFundsInput({ userFinances, onFinancesUpdate }: 
     setError('');
     
     try {
-      updateAvailableFunds(numericAmount, currency);
+      updateAvailableFunds(numericAmount, currency, minPaymentPercentage);
       const updatedFinances: UserFinances = {
         monthlyIncomeAfterExpenses: numericAmount,
         currency: currency,
+        defaultMinimumPaymentPercentage: minPaymentPercentage,
         lastUpdated: new Date()
       };
       onFinancesUpdate(updatedFinances);
@@ -59,8 +62,10 @@ export default function AvailableFundsInput({ userFinances, onFinancesUpdate }: 
     setError('');
     if (userFinances) {
       setAmount(userFinances.monthlyIncomeAfterExpenses.toString());
+      setMinPaymentPercentage(userFinances.defaultMinimumPaymentPercentage || 2);
     } else {
       setAmount('');
+      setMinPaymentPercentage(2);
     }
   };
 
@@ -131,6 +136,37 @@ export default function AvailableFundsInput({ userFinances, onFinancesUpdate }: 
                 ))}
               </select>
             </div>
+          </div>
+
+          {/* Default Minimum Payment Percentage Slider */}
+          <div>
+            <div className="flex justify-between items-center mb-2">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Default Minimum Payment: {minPaymentPercentage}%
+              </label>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                1% - 10%
+              </span>
+            </div>
+            <input
+              type="range"
+              min="1"
+              max="10"
+              value={minPaymentPercentage}
+              onChange={(e) => setMinPaymentPercentage(parseInt(e.target.value))}
+              className="w-full h-2 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer"
+              style={{
+                background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((minPaymentPercentage - 1) / 9) * 100}%, #e5e7eb ${((minPaymentPercentage - 1) / 9) * 100}%, #e5e7eb 100%)`
+              }}
+            />
+            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <span>1%</span>
+              <span>5%</span>
+              <span>10%</span>
+            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+              Used for debts where you don't specify a minimum payment. Most credit cards require 1-3% of balance.
+            </p>
           </div>
 
           {error && (

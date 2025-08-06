@@ -74,10 +74,11 @@ export function testMinimumPaymentDefaults() {
   console.log('\n💳 Testing Minimum Payment Defaults...');
   
   const testCases = [
-    { balance: 1000, expected: 100 }, // 10% of $1000
-    { balance: 500, expected: 50 },   // 10% of $500
-    { balance: 200, expected: 25 },   // Minimum $25
-    { balance: 100, expected: 25 },   // Minimum $25
+    { balance: 5000, expected: 100 }, // 2% of $5000
+    { balance: 2500, expected: 50 },  // 2% of $2500
+    { balance: 1250, expected: 25 },  // Minimum $25 (2% would be $25)
+    { balance: 1000, expected: 25 },  // Minimum $25 (2% would be $20)
+    { balance: 500, expected: 25 },   // Minimum $25 (2% would be $10)
   ];
   
   testCases.forEach(({ balance, expected }) => {

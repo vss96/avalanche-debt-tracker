@@ -4,7 +4,8 @@ import { generateDebtId } from './debtCalculations';
 export const sampleDebts: DebtEntry[] = [
   {
     id: generateDebtId(),
-    creditorName: 'Credit Card (High Interest)',
+    creditorName: 'Chase Visa Credit Card',
+    debtType: 'credit_card',
     balance: 5000,
     minimumPayment: 150,
     interestRate: 24.99,
@@ -13,28 +14,38 @@ export const sampleDebts: DebtEntry[] = [
   },
   {
     id: generateDebtId(),
-    creditorName: 'Student Loan',
+    creditorName: 'Federal Student Loan',
+    debtType: 'loan',
     balance: 15000,
-    minimumPayment: 200,
+    minimumPayment: 0, // Will be calculated based on duration
     interestRate: 6.5,
+    loanDurationMonths: 24, // 2 years
     createdAt: new Date('2024-01-10'),
     updatedAt: new Date('2024-01-10')
   },
   {
     id: generateDebtId(),
-    creditorName: 'Car Loan',
+    creditorName: 'Honda Auto Loan',
+    debtType: 'loan',
     balance: 12000,
-    minimumPayment: 350,
+    minimumPayment: 0, // Will be calculated
     interestRate: 4.2,
+    loanDurationMonths: 18, // 1.5 years
+    loanFee: 15,
+    loanFeeType: 'monthly',
     createdAt: new Date('2024-01-05'),
     updatedAt: new Date('2024-01-05')
   },
   {
     id: generateDebtId(),
-    creditorName: 'Personal Loan',
+    creditorName: 'SoFi Personal Loan',
+    debtType: 'loan',
     balance: 3000,
-    minimumPayment: 100,
+    minimumPayment: 0, // Will be calculated
     interestRate: 12.5,
+    loanDurationMonths: 12, // 1 year
+    loanFee: 100,
+    loanFeeType: 'upfront',
     createdAt: new Date('2024-01-20'),
     updatedAt: new Date('2024-01-20')
   }
@@ -54,6 +65,7 @@ export function loadSampleData() {
     const sampleFinances = {
       monthlyIncomeAfterExpenses: 1000,
       currency: 'USD',
+      defaultMinimumPaymentPercentage: 2,
       lastUpdated: new Date()
     };
     localStorage.setItem('debt-tracker-finances', JSON.stringify(sampleFinances));

@@ -81,10 +81,11 @@ export function loadUserFinances(): UserFinances | null {
   
   if (!finances) return null;
   
-  // Convert date string back to Date object and ensure currency exists
+  // Convert date string back to Date object and ensure defaults exist
   return {
     ...finances,
     currency: finances.currency || 'USD', // Default to USD if not set
+    defaultMinimumPaymentPercentage: finances.defaultMinimumPaymentPercentage || 2, // Default to 2%
     lastUpdated: new Date(finances.lastUpdated)
   };
 }
@@ -93,10 +94,11 @@ export function saveUserFinances(finances: UserFinances): void {
   saveToStorage(STORAGE_KEYS.USER_FINANCES, finances);
 }
 
-export function updateAvailableFunds(amount: number, currency: string = 'USD'): void {
+export function updateAvailableFunds(amount: number, currency: string = 'USD', defaultMinPaymentPercentage: number = 2): void {
   const finances: UserFinances = {
     monthlyIncomeAfterExpenses: amount,
     currency: currency,
+    defaultMinimumPaymentPercentage: defaultMinPaymentPercentage,
     lastUpdated: new Date()
   };
   saveUserFinances(finances);

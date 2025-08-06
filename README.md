@@ -6,7 +6,7 @@ A smart debt management app that helps you optimize your debt payoff strategy us
 
 ### 🎯 **Smart Debt Management**
 - Add, edit, and delete debt entries
-- Automatic 10% minimum payment calculation (or set your own)
+- Adjustable minimum payment percentage (1-10%, defaults to 2%)
 - Real-time avalanche strategy recommendations
 - Monthly payment breakdown with interactive timeline
 
@@ -132,10 +132,41 @@ The **debt avalanche** method saves you the most money by:
 | Command | Description |
 |---------|-------------|
 | `npm run dev` | Start development server |
-| `npm run build` | Build for production |
+| `npm run build` | Build for production (static export) |
 | `npm run start` | Start production server |
 | `npm run lint` | Run ESLint |
 | `npm run check` | Type check with TypeScript |
+
+## 🚀 Deployment
+
+### **Cloudflare Workers (Current Setup)**
+
+This app is configured to deploy to Cloudflare Workers using OpenNext:
+
+```bash
+# Deploy to Cloudflare Workers
+npm run deploy
+```
+
+**Live Demo:** https://avalanche-debt-tracker.shettyvikas209.workers.dev
+
+### **Deployment Commands**
+
+| Command | Description |
+|---------|-------------|
+| `npm run deploy` | Build and deploy to Cloudflare Workers |
+| `npm run preview` | Build and preview locally before deploying |
+| `npm run build` | Build the Next.js app |
+
+### **Configuration Files**
+- `wrangler.jsonc` - Cloudflare Workers configuration
+- `open-next.config.ts` - OpenNext Cloudflare adapter settings
+- `next.config.ts` - Next.js configuration
+
+### **Alternative Hosting Options**
+- **Vercel**: `vercel deploy` (perfect for Next.js)
+- **Netlify**: Connect GitHub repo with build command `npm run build`
+- **Static hosting**: Build and upload `out` folder (if using static export)
 
 ## 📱 Data Storage
 
@@ -143,6 +174,34 @@ The **debt avalanche** method saves you the most money by:
 - **Privacy**: Your financial data never leaves your device
 - **Persistence**: Data survives browser restarts
 - **Backup**: Export/import functionality available
+
+## 🔧 Troubleshooting
+
+### **Deployment Issues**
+
+If deployment fails:
+
+1. **Test the build locally:**
+   ```bash
+   npm run build  # Should complete without errors
+   npm run preview  # Test the built app locally
+   ```
+
+2. **Check required files exist:**
+   - `wrangler.jsonc` - Cloudflare Workers config
+   - `open-next.config.ts` - OpenNext adapter config
+   - `next.config.ts` - Next.js config
+
+3. **Verify dependencies:**
+   ```bash
+   npm install  # Ensure @opennextjs/cloudflare is installed
+   ```
+
+### **Common Issues**
+- **Build fails**: Run `npm run check` to verify TypeScript
+- **Missing data**: localStorage is domain-specific between domains
+- **Currency not detected**: Check browser locale in dev tools
+- **Worker errors**: Check Cloudflare Workers logs in dashboard
 
 ## 🎨 Customization
 

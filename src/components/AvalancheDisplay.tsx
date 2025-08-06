@@ -10,19 +10,21 @@ interface AvalancheDisplayProps {
   strategy: AvalancheStrategy | null;
   debts?: DebtEntry[];
   availableFunds?: number;
+  userFinances?: any;
 }
 
-export default function AvalancheDisplay({ strategy, debts, availableFunds }: AvalancheDisplayProps) {
+export default function AvalancheDisplay({ strategy, debts, availableFunds, userFinances }: AvalancheDisplayProps) {
   const { formatCurrency } = useCurrency();
   const [monthsToShow, setMonthsToShow] = useState(6);
 
   // Ensure we have valid arrays and numbers
   const safeDebts = debts || [];
   const safeAvailableFunds = availableFunds || 0;
+  const defaultPercentage = userFinances?.defaultMinimumPaymentPercentage || 2;
 
   // Recalculate strategy when months to show changes
   const currentStrategy = (safeDebts.length > 0 && safeAvailableFunds > 0)
-    ? calculateAvalancheStrategy(safeDebts, safeAvailableFunds, monthsToShow)
+    ? calculateAvalancheStrategy(safeDebts, safeAvailableFunds, monthsToShow, defaultPercentage)
     : strategy;
   if (!currentStrategy) {
     return (

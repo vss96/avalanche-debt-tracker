@@ -28,7 +28,12 @@ export default function Home() {
 
     // Calculate avalanche strategy if we have both debts and finances
     if (loadedDebts.length > 0 && loadedFinances) {
-      const strategy = calculateAvalancheStrategy(loadedDebts, loadedFinances.monthlyIncomeAfterExpenses);
+      const strategy = calculateAvalancheStrategy(
+        loadedDebts,
+        loadedFinances.monthlyIncomeAfterExpenses,
+        6, // months to show
+        loadedFinances.defaultMinimumPaymentPercentage || 2
+      );
       setAvalancheStrategy(strategy);
     }
   }, []);
@@ -36,7 +41,12 @@ export default function Home() {
   // Recalculate strategy when debts or finances change
   useEffect(() => {
     if (debts.length > 0 && userFinances) {
-      const strategy = calculateAvalancheStrategy(debts, userFinances.monthlyIncomeAfterExpenses);
+      const strategy = calculateAvalancheStrategy(
+        debts,
+        userFinances.monthlyIncomeAfterExpenses,
+        6, // months to show
+        userFinances.defaultMinimumPaymentPercentage || 2
+      );
       setAvalancheStrategy(strategy);
     } else {
       setAvalancheStrategy(null);
@@ -147,6 +157,7 @@ export default function Home() {
               strategy={avalancheStrategy}
               debts={debts}
               availableFunds={userFinances?.monthlyIncomeAfterExpenses || 0}
+              userFinances={userFinances}
             />
           </div>
         </div>

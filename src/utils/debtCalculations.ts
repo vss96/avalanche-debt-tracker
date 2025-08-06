@@ -1,10 +1,70 @@
 import { DebtEntry, AvalancheStrategy, AvalancheRecommendation, DebtSummary, MonthlyBreakdown } from '@/types/debt';
 
 /**
- * Ensure debt has minimum payment (default to 10% of balance if not set)
+ * Calculate minimum payment for a loan based on duration and interest rate
  */
-function ensureMinimumPayment(debt: DebtEntry): DebtEntry {
-  const minimumPayment = debt.minimumPayment || Math.max(debt.balance * 0.1, 25); // 10% or $25 minimum
+function calculateLoanMinimumPayment(balance: number, annualInterestRate: number, durationMonths: number): number {
+  if (annualInterestRate === 0) {
+    return balance / durationMonths; // Simple division for 0% interest
+  }
+
+  const monthlyRate = annualInterestRate / 100 / 12;
+  const numerator = balance * monthlyRate * Math.pow(1 + monthlyRate, durationMonths);
+  const denominator = Math.pow(1 + monthlyRate, durationMonths) - 1;
+
+  return numerator / denominator;
+}
+
+/**
+ * Calculate effective balance including loan fees
+ */
+function calculateEffectiveBalance(debt: DebtEntry): number {
+  let effectiveBalance = debt.balance;
+
+  if (debt.debtType === 'loan' && debt.loanFee && debt.loanFeeType === 'upfront') {
+    // Add upfront fee to the balance for calculation purposes
+    effectiveBalance += debt.loanFee;
+  }
+
+  return effectiveBalance;
+}
+
+/**
+ * Calculate effective monthly payment including loan fees
+ */
+function calculateEffectiveMonthlyPayment(debt: DebtEntry, basePayment: number): number {
+  let effectivePayment = basePayment;
+
+  if (debt.debtType === 'loan' && debt.loanFee && debt.loanFeeType === 'monthly') {
+    // Add monthly fee to the payment
+    effectivePayment += debt.loanFee;
+  }
+
+  return effectivePayment;
+}
+
+/**
+ * Ensure debt has minimum payment (default to specified percentage of balance if not set)
+ */
+function ensureMinimumPayment(debt: DebtEntry, defaultPercentage: number = 2): DebtEntry {
+  let minimumPayment = debt.minimumPayment;
+
+  if (!minimumPayment) {
+    if (debt.debtType === 'loan' && debt.loanDurationMonths) {
+      // For loans, calculate based on loan duration and interest rate
+      const effectiveBalance = calculateEffectiveBalance(debt);
+      minimumPayment = calculateLoanMinimumPayment(effectiveBalance, debt.interestRate, debt.loanDurationMonths);
+
+      // Add monthly fee if applicable
+      if (debt.loanFeeType === 'monthly' && debt.loanFee) {
+        minimumPayment += debt.loanFee;
+      }
+    } else {
+      // For credit cards or loans without duration, use percentage of balance
+      minimumPayment = Math.max(debt.balance * (defaultPercentage / 100), 25);
+    }
+  }
+
   return {
     ...debt,
     minimumPayment
@@ -18,7 +78,8 @@ function ensureMinimumPayment(debt: DebtEntry): DebtEntry {
 export function calculateAvalancheStrategy(
   debts: DebtEntry[],
   availableFunds: number,
-  monthsToShow: number = 6
+  monthsToShow: number = 6,
+  defaultMinPaymentPercentage: number = 2
 ): AvalancheStrategy {
   if (debts.length === 0) {
     return {
@@ -32,8 +93,8 @@ export function calculateAvalancheStrategy(
     };
   }
 
-  // Ensure all debts have minimum payments (default to 10% if not set)
-  const debtsWithMinimums = debts.map(ensureMinimumPayment);
+  // Ensure all debts have minimum payments (default to specified percentage if not set)
+  const debtsWithMinimums = debts.map(debt => ensureMinimumPayment(debt, defaultMinPaymentPercentage));
 
   // Sort debts by interest rate (highest first) for avalanche strategy
   const sortedDebts = [...debtsWithMinimums].sort((a, b) => b.interestRate - a.interestRate);
@@ -62,7 +123,7 @@ export function calculateAvalancheStrategy(
       isTargetDebt,
       monthsToPayoff: monthsWithRecommended,
       totalInterestSaved: interestSaved,
-      monthlyBreakdown: calculateMonthlyBreakdown(debt.balance, recommendedPayment, debt.interestRate, monthsToShow)
+      monthlyBreakdown: calculateMonthlyBreakdown(debt.balance, recommendedPayment, debt.interestRate, monthsToShow, debt)
     };
   });
 
@@ -134,16 +195,33 @@ export function calculateMonthlyBreakdown(
   initialBalance: number,
   monthlyPayment: number,
   annualInterestRate: number,
-  monthsToShow: number
+  monthsToShow: number,
+  debt?: DebtEntry
 ): MonthlyBreakdown[] {
   const breakdown: MonthlyBreakdown[] = [];
   let currentBalance = initialBalance;
   const monthlyInterestRate = annualInterestRate / 100 / 12;
 
+  // Account for upfront loan fee in initial balance
+  if (debt?.debtType === 'loan' && debt.loanFee && debt.loanFeeType === 'upfront') {
+    currentBalance += debt.loanFee;
+  }
+
   for (let month = 1; month <= monthsToShow && currentBalance > 0; month++) {
     const interestPaid = currentBalance * monthlyInterestRate;
-    const principalPaid = Math.min(monthlyPayment - interestPaid, currentBalance);
-    const actualPayment = interestPaid + principalPaid;
+
+    // Calculate base payment toward principal
+    let availableForPrincipal = monthlyPayment - interestPaid;
+
+    // Subtract monthly loan fee if applicable
+    let monthlyFee = 0;
+    if (debt?.debtType === 'loan' && debt.loanFee && debt.loanFeeType === 'monthly') {
+      monthlyFee = debt.loanFee;
+      availableForPrincipal -= monthlyFee;
+    }
+
+    const principalPaid = Math.min(Math.max(0, availableForPrincipal), currentBalance);
+    const actualPayment = interestPaid + principalPaid + monthlyFee;
 
     breakdown.push({
       month,
@@ -207,29 +285,43 @@ export function calculateDebtSummary(debts: DebtEntry[]): DebtSummary {
  */
 export function validateDebtEntry(debt: Partial<DebtEntry>): string[] {
   const errors: string[] = [];
-  
+
   if (!debt.creditorName || debt.creditorName.trim().length === 0) {
     errors.push('Creditor name is required');
   }
-  
+
+  if (!debt.debtType) {
+    errors.push('Debt type is required');
+  }
+
   if (debt.balance === undefined || debt.balance <= 0) {
     errors.push('Balance must be greater than 0');
   }
-  
-  // Minimum payment is optional - will default to 10% of balance
+
+  // Minimum payment is optional - will default based on debt type
   if (debt.minimumPayment !== undefined && debt.minimumPayment <= 0) {
     errors.push('Minimum payment must be greater than 0 if provided');
   }
-  
+
   if (debt.interestRate === undefined || debt.interestRate < 0 || debt.interestRate > 100) {
     errors.push('Interest rate must be between 0 and 100');
   }
-  
-  const effectiveMinPayment = debt.minimumPayment || (debt.balance ? debt.balance * 0.1 : 0);
-  if (debt.balance && effectiveMinPayment > debt.balance) {
-    errors.push('Minimum payment cannot be greater than the balance');
+
+  // Loan-specific validations
+  if (debt.debtType === 'loan') {
+    if (debt.loanDurationMonths !== undefined && (debt.loanDurationMonths <= 0 || debt.loanDurationMonths > 24)) {
+      errors.push('Loan duration must be between 1 and 24 months');
+    }
+
+    if (debt.loanFee !== undefined && debt.loanFee < 0) {
+      errors.push('Loan fee cannot be negative');
+    }
+
+    if (debt.loanFee && debt.loanFee > 0 && !debt.loanFeeType) {
+      errors.push('Loan fee type is required when fee is specified');
+    }
   }
-  
+
   return errors;
 }
 
