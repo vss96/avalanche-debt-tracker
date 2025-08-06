@@ -165,7 +165,7 @@ export default function AvailableFundsInput({ userFinances, onFinancesUpdate }: 
               <span>10%</span>
             </div>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-              Used for debts where you don't specify a minimum payment. Most credit cards require 1-3% of balance.
+              Used for debts where you don&apos;t specify a minimum payment. Most credit cards require 1-3% of balance.
             </p>
           </div>
 

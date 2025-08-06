@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { AvalancheStrategy, DebtEntry } from '@/types/debt';
+import { AvalancheStrategy, DebtEntry, UserFinances } from '@/types/debt';
 import { formatPercentage, calculateAvalancheStrategy } from '@/utils/debtCalculations';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import MonthlyBreakdown from './MonthlyBreakdown';
@@ -10,7 +10,7 @@ interface AvalancheDisplayProps {
   strategy: AvalancheStrategy | null;
   debts?: DebtEntry[];
   availableFunds?: number;
-  userFinances?: any;
+  userFinances?: UserFinances | null;
 }
 
 export default function AvalancheDisplay({ strategy, debts, availableFunds, userFinances }: AvalancheDisplayProps) {

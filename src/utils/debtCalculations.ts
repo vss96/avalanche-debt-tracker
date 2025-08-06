@@ -31,17 +31,18 @@ function calculateEffectiveBalance(debt: DebtEntry): number {
 
 /**
  * Calculate effective monthly payment including loan fees
+ * Currently integrated directly into calculations, but kept for potential future use
  */
-function calculateEffectiveMonthlyPayment(debt: DebtEntry, basePayment: number): number {
-  let effectivePayment = basePayment;
+// function calculateEffectiveMonthlyPayment(debt: DebtEntry, basePayment: number): number {
+//   let effectivePayment = basePayment;
 
-  if (debt.debtType === 'loan' && debt.loanFee && debt.loanFeeType === 'monthly') {
-    // Add monthly fee to the payment
-    effectivePayment += debt.loanFee;
-  }
+//   if (debt.debtType === 'loan' && debt.loanFee && debt.loanFeeType === 'monthly') {
+//     // Add monthly fee to the payment
+//     effectivePayment += debt.loanFee;
+//   }
 
-  return effectivePayment;
-}
+//   return effectivePayment;
+// }
 
 /**
  * Ensure debt has minimum payment (default to specified percentage of balance if not set)

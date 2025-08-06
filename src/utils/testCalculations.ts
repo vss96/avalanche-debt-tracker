@@ -25,8 +25,9 @@ export function runCalculationTests() {
     {
       id: generateDebtId(),
       creditorName: 'Credit Card',
+      debtType: 'credit_card',
       balance: 5000,
-      minimumPayment: 0, // Will default to 10%
+      minimumPayment: 0, // Will default to percentage
       interestRate: 24.99,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -34,9 +35,11 @@ export function runCalculationTests() {
     {
       id: generateDebtId(),
       creditorName: 'Student Loan',
+      debtType: 'loan',
       balance: 15000,
       minimumPayment: 200,
       interestRate: 6.5,
+      loanDurationMonths: 24,
       createdAt: new Date(),
       updatedAt: new Date()
     }
@@ -85,6 +88,7 @@ export function testMinimumPaymentDefaults() {
     const debt: DebtEntry = {
       id: generateDebtId(),
       creditorName: 'Test Debt',
+      debtType: 'credit_card',
       balance,
       minimumPayment: 0, // Will be calculated
       interestRate: 15,
