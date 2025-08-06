@@ -37,6 +37,7 @@ export interface MonthlyBreakdown {
 export interface AvalancheRecommendation {
   debtId: string;
   creditorName: string;
+  debtType: DebtType;
   currentBalance: number;
   minimumPayment: number;
   interestRate: number;
@@ -45,6 +46,7 @@ export interface AvalancheRecommendation {
   monthsToPayoff?: number;
   totalInterestSaved?: number;
   monthlyBreakdown?: MonthlyBreakdown[];
+  loanDurationMonths?: number; // For loans - original loan term
 }
 
 export interface AvalancheStrategy {

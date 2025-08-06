@@ -15,7 +15,7 @@ interface AvalancheDisplayProps {
 
 export default function AvalancheDisplay({ strategy, debts, availableFunds, userFinances }: AvalancheDisplayProps) {
   const { formatCurrency } = useCurrency();
-  const [monthsToShow, setMonthsToShow] = useState(6);
+  const [monthsToShow, setMonthsToShow] = useState(12);
 
   // Ensure we have valid arrays and numbers
   const safeDebts = debts || [];
@@ -99,24 +99,24 @@ export default function AvalancheDisplay({ strategy, debts, availableFunds, user
               Preview Timeline: {monthsToShow} months
             </label>
             <span className="text-xs text-gray-500 dark:text-gray-400">
-              Drag to adjust (1-12 months)
+              Drag to adjust (1-24 months)
             </span>
           </div>
           <input
             type="range"
             min="1"
-            max="12"
+            max="24"
             value={monthsToShow}
             onChange={(e) => setMonthsToShow(parseInt(e.target.value))}
             className="w-full h-2 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer"
             style={{
-              background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((monthsToShow - 1) / 11) * 100}%, #e5e7eb ${((monthsToShow - 1) / 11) * 100}%, #e5e7eb 100%)`
+              background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((monthsToShow - 1) / 23) * 100}%, #e5e7eb ${((monthsToShow - 1) / 23) * 100}%, #e5e7eb 100%)`
             }}
           />
           <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
             <span>1 month</span>
-            <span>6 months</span>
             <span>12 months</span>
+            <span>24 months</span>
           </div>
         </div>
         

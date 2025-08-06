@@ -79,7 +79,7 @@ function ensureMinimumPayment(debt: DebtEntry, defaultPercentage: number = 2): D
 export function calculateAvalancheStrategy(
   debts: DebtEntry[],
   availableFunds: number,
-  monthsToShow: number = 6,
+  monthsToShow: number = 12,
   defaultMinPaymentPercentage: number = 2
 ): AvalancheStrategy {
   if (debts.length === 0) {
@@ -117,6 +117,7 @@ export function calculateAvalancheStrategy(
     return {
       debtId: debt.id,
       creditorName: debt.creditorName,
+      debtType: debt.debtType,
       currentBalance: debt.balance,
       minimumPayment: debt.minimumPayment,
       interestRate: debt.interestRate,
@@ -124,7 +125,8 @@ export function calculateAvalancheStrategy(
       isTargetDebt,
       monthsToPayoff: monthsWithRecommended,
       totalInterestSaved: interestSaved,
-      monthlyBreakdown: calculateMonthlyBreakdown(debt.balance, recommendedPayment, debt.interestRate, monthsToShow, debt)
+      monthlyBreakdown: calculateMonthlyBreakdown(debt.balance, recommendedPayment, debt.interestRate, monthsToShow, debt),
+      loanDurationMonths: debt.loanDurationMonths
     };
   });
 

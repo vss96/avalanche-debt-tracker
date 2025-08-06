@@ -14,12 +14,17 @@ export default function MonthlyBreakdown({ recommendation, monthsToShow }: Month
   const { formatCurrency } = useCurrency();
   const [isExpanded, setIsExpanded] = useState(false);
 
+  // For loans, use their actual duration; for credit cards, use the slider value
+  const effectiveMonthsToShow = recommendation.debtType === 'loan' && recommendation.loanDurationMonths
+    ? Math.min(recommendation.loanDurationMonths, monthsToShow)
+    : monthsToShow;
+
   // Recalculate breakdown when months to show changes
   const breakdown = calculateMonthlyBreakdown(
     recommendation.currentBalance,
     recommendation.recommendedPayment,
     recommendation.interestRate,
-    monthsToShow
+    effectiveMonthsToShow
   );
 
   const totalInterestInPeriod = breakdown.reduce((sum, month) => sum + month.interestPaid, 0);
@@ -33,10 +38,19 @@ export default function MonthlyBreakdown({ recommendation, monthsToShow }: Month
           className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 flex items-center gap-1"
         >
           {isExpanded ? '▼' : '▶'} Monthly Breakdown
+          {recommendation.debtType === 'loan' && (
+            <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-full ml-2">
+              🏦 Fixed Term
+            </span>
+          )}
         </button>
         {isExpanded && (
           <div className="text-xs text-gray-500 dark:text-gray-400">
-            Showing {breakdown.length} months
+            {recommendation.debtType === 'loan' && recommendation.loanDurationMonths ? (
+              <span>Loan term: {recommendation.loanDurationMonths} months (showing {Math.min(breakdown.length, recommendation.loanDurationMonths)})</span>
+            ) : (
+              <span>Showing {breakdown.length} months</span>
+            )}
           </div>
         )}
       </div>

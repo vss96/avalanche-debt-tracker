@@ -31,7 +31,7 @@ export default function Home() {
       const strategy = calculateAvalancheStrategy(
         loadedDebts,
         loadedFinances.monthlyIncomeAfterExpenses,
-        6, // months to show
+        12, // months to show
         loadedFinances.defaultMinimumPaymentPercentage || 2
       );
       setAvalancheStrategy(strategy);
@@ -44,7 +44,7 @@ export default function Home() {
       const strategy = calculateAvalancheStrategy(
         debts,
         userFinances.monthlyIncomeAfterExpenses,
-        6, // months to show
+        12, // months to show
         userFinances.defaultMinimumPaymentPercentage || 2
       );
       setAvalancheStrategy(strategy);
